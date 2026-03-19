@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Antigravity | Auru Visionary ERP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Cabeçalho de Perfil -->
+        <header class="header-vision">
+            <div class="user-badge">
+                <div class="avatar-circle"></div>
+                <p style="color: var(--text-med)">Bem-vinda,</p>
+                <h2 id="user-name">Esposa</h2>
+            </div>
+        </header>
+
+        <!-- Dashboard de Finanças (Home) -->
+        <main class="main-dashboard view-section active" id="view-home">
+            <div class="card-finance spending-now">
+                <p>Gastos em Março</p>
+                <h1 id="total-spending">R$ 4.994,95</h1>
+                
+                <div class="chart-container" id="spending-chart">
+                    <div class="chart-bar" style="height: 40%"></div>
+                    <div class="chart-bar" style="height: 60%"></div>
+                    <div class="chart-bar active" style="height: 90%"></div>
+                    <div class="chart-bar" style="height: 50%"></div>
+                    <div class="chart-bar" style="height: 70%"></div>
+                </div>
+            </div>
+
+            <div class="card-finance">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--text-med)">Balança Familiar</span>
+                    <span style="color: var(--success)" id="balance-status">Saudável</span>
+                </div>
+                <div class="scale-bar-wrapper" style="width: 100%; height: 12px; background: #252528">
+                    <div id="scale-income" class="scale-fill income" style="background: var(--primary)"></div>
+                    <div id="scale-expense" class="scale-fill expense"></div>
+                    <div class="scale-pointer" style="width: 4px; border-radius: 2px;"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Aba: Histórico (Analytics) -->
+        <main class="main-dashboard view-section" id="view-analytics">
+            <h2 style="font-family: var(--font-titles)">Histórico</h2>
+            <div class="card-item">
+                <div class="icon-box">🛒</div>
+                <div style="flex: 1">
+                    <p>Mercado Central</p>
+                    <small style="color: var(--text-med)">Hoje, 14:30</small>
+                </div>
+                <span class="amount expense">- R$ 150,00</span>
+            </div>
+            <div class="card-item">
+                <div class="icon-box">💡</div>
+                <div style="flex: 1">
+                    <p>Enel - Energia</p>
+                    <small style="color: var(--text-med)">Ontem, 09:00</small>
+                </div>
+                <span class="amount expense">- R$ 320,50</span>
+            </div>
+        </main>
+
+        <!-- Aba: Cartões -->
+        <main class="main-dashboard view-section" id="view-cards">
+            <h2 style="font-family: var(--font-titles)">Assinaturas & Cartões</h2>
+            <div class="card-finance" style="background: var(--accent-gradient); min-height: 180px; justify-content: space-between;">
+                <div>
+                    <p style="opacity: 0.8">Cartão Principal</p>
+                    <h3>**** **** **** 4590</h3>
+                </div>
+                <h2 style="text-align: right">VISA</h2>
+            </div>
+            <div class="card-item">
+                <div class="icon-box">🎵</div>
+                <div style="flex: 1">
+                    <p>Spotify Premium</p>
+                    <small style="color: var(--text-med)">Fatura: Dia 20</small>
+                </div>
+                <span>R$ 21,90</span>
+            </div>
+        </main>
+
+        <!-- Aba: Perfil -->
+        <main class="main-dashboard view-section" id="view-profile">
+            <h2 style="font-family: var(--font-titles)">Núcleo Familiar</h2>
+            <div class="card-finance" style="align-items: center; text-align: center;">
+                <div class="avatar-circle" style="width: 80px; height: 80px;"></div>
+                <h3>Dona de Casa</h3>
+                <p style="color: var(--text-med)">Admin do Household</p>
+            </div>
+            <button class="card-item" style="width: 100%; border: none; cursor: pointer; color: var(--primary)">
+                + Convidar Membro da Família
+            </button>
+        </nav>
+
+        <!-- Navegação Flutuante -->
+        <nav class="floating-nav">
+            <a href="#" class="nav-item active">🏠</a>
+            <a href="#" class="nav-item">📊</a>
+            <div class="scanner-btn" id="scanner-btn">+</div>
+            <a href="#" class="nav-item">💳</a>
+            <a href="#" class="nav-item">👤</a>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

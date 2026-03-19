@@ -1,0 +1,207 @@
+/* 
+  Antigravity Design System - Premium SaaS Layout
+  Ref: "Family Finance" Aesthetic
+*/
+
+:root {
+    --bg-main: #000000;
+    --bg-surface: #121214;
+    --primary: #7C5DFF;
+    --accent-gradient: linear-gradient(180deg, #7C5DFF 0%, #B066FE 100%);
+    --success: #00F0A0;
+    --danger: #FF3B3B;
+    --text-high: #FFFFFF;
+    --text-med: #949494;
+    --text-low: #4A4A4A;
+    --font-main: 'Inter', sans-serif;
+    --font-titles: 'Outfit', sans-serif;
+    --radius-lg: 32px;
+    --radius-md: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-high);
+    font-family: var(--font-main);
+    overflow: hidden;
+}
+
+.app-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    padding-bottom: 100px; /* Space for Floating Nav */
+}
+
+/* Header & Scale */
+.header-vision {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    gap: 10px;
+}
+
+.user-badge {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.avatar-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    margin-bottom: 10px;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+/* Dashboard Analytics */
+.main-dashboard {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scrollbar-width: none;
+}
+
+.main-dashboard::-webkit-scrollbar { display: none; }
+
+.card-finance {
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.spending-now {
+    text-align: center;
+}
+
+.spending-now p {
+    color: var(--text-med);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.spending-now h1 {
+    font-size: 2.5rem;
+    font-family: var(--font-titles);
+    margin-top: 5px;
+}
+
+/* Charts */
+.chart-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 120px;
+    padding: 10px 0;
+}
+
+.chart-bar {
+    width: 25px;
+    background: #252528;
+    border-radius: 12px;
+    position: relative;
+    transition: height 0.8s ease;
+}
+
+.chart-bar.active {
+    background: var(--accent-gradient);
+}
+
+/* Floating Navigation Bar */
+.floating-nav {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    height: 64px;
+    border-radius: 32px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.nav-item {
+    color: var(--text-low);
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 10px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.nav-item.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* Scanner Button */
+.scanner-btn {
+    width: 48px;
+    height: 48px;
+    background: var(--bg-main);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+/* Seções de Abas */
+.view-section {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 0.4s ease;
+}
+
+.view-section.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards Específicos */
+.card-item {
+    background: #1C1C1E;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #2C2C2E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
