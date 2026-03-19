@@ -1,3 +1,37 @@
+function initApp() {
+    const savedUser = localStorage.getItem('auru_user');
+    if (savedUser) {
+        showMainApp(savedUser);
+    }
+}
+
+function selectProfile(name) {
+    localStorage.setItem('auru_user', name);
+    const splash = document.getElementById('splash-screen');
+    splash.style.opacity = '0';
+    setTimeout(() => {
+        splash.style.display = 'none';
+        showMainApp(name);
+    }, 500);
+}
+
+function showMainApp(name) {
+    const app = document.getElementById('main-app');
+    if (app) app.style.display = 'flex';
+    
+    const nameEl = document.getElementById('user-display-name');
+    if (nameEl) nameEl.textContent = name;
+    
+    const avatar = document.getElementById('current-user-avatar');
+    if (avatar) {
+        if (name === 'Marcos') {
+            avatar.style.background = 'linear-gradient(45deg, #2196F3, #00BCD4)';
+        } else {
+            avatar.style.background = 'linear-gradient(45deg, #E91E63, #9C27B0)';
+        }
+    }
+}
+
 function initDashboard() {
     // Animação das barras do gráfico
     const bars = document.querySelectorAll('.chart-bar');
@@ -52,7 +86,10 @@ navItems.forEach((item, index) => {
     });
 });
 
-document.addEventListener('DOMContentLoaded', initDashboard);
+document.addEventListener('DOMContentLoaded', () => {
+    initApp();
+    initDashboard();
+});
 
 document.getElementById('scanner-btn').addEventListener('click', () => {
     alert('Auru iniciou o escaneamento do recibo...');
