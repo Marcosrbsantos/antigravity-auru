@@ -47,12 +47,38 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 20px 0;
-    gap: 10px;
+    gap: 5px;
 }
 
 .user-badge {
     text-align: center;
-    margin-bottom: 20px;
+    width: 100%;
+}
+
+.balance-container {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 20px;
+    border-radius: 20px;
+    margin-top: 15px;
+    display: inline-block;
+}
+
+.balance-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+}
+
+.add-funds-btn {
+    background: var(--primary);
+    border: none;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .avatar-circle {
@@ -100,6 +126,17 @@ body {
     font-size: 2.5rem;
     font-family: var(--font-titles);
     margin-top: 5px;
+}
+
+.remaining-balance-indicator {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: var(--text-med);
+}
+
+.remaining-balance-indicator strong {
+    font-size: 1.1rem;
+    margin-left: 5px;
 }
 
 /* Charts */
@@ -264,6 +301,34 @@ body {
 
 .profile-avatar.marcos { background-image: linear-gradient(45deg, #2196F3, #00BCD4); }
 .profile-avatar.izabel { background-image: linear-gradient(45deg, #E91E63, #9C27B0); }
+
+.avatar-edit-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.edit-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--primary);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    border: 2px solid var(--bg-main);
+    cursor: pointer;
+}
+
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-low);
+    font-style: italic;
+}
 
 .profile-card span {
     font-family: var(--font-titles);

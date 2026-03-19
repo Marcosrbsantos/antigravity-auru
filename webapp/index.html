@@ -36,6 +36,14 @@
                 <div class="avatar-circle" id="current-user-avatar"></div>
                 <p style="color: var(--text-med)">Bem-vindo,</p>
                 <h2 id="user-display-name">Carregando...</h2>
+                <!-- Saldo em Conta -->
+                <div class="balance-container">
+                    <p>Saldo em Conta</p>
+                    <div class="balance-row">
+                        <h3 id="current-balance">R$ 0,00</h3>
+                        <button class="add-funds-btn" onclick="addFunds()">+</button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -43,21 +51,22 @@
         <main class="main-dashboard view-section active" id="view-home">
             <div class="card-finance spending-now">
                 <p>Gastos em Março</p>
-                <h1 id="total-spending">R$ 4.994,95</h1>
+                <h1 id="total-spending">R$ 0,00</h1>
                 
                 <div class="chart-container" id="spending-chart">
-                    <div class="chart-bar" style="height: 40%"></div>
-                    <div class="chart-bar" style="height: 60%"></div>
-                    <div class="chart-bar active" style="height: 90%"></div>
-                    <div class="chart-bar" style="height: 50%"></div>
-                    <div class="chart-bar" style="height: 70%"></div>
+                    <!-- Barras serão geradas dinamicamente -->
+                </div>
+
+                <div class="remaining-balance-indicator">
+                    <span>Restante:</span>
+                    <strong id="remaining-value">R$ 0,00</strong>
                 </div>
             </div>
 
             <div class="card-finance">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="color: var(--text-med)">Balança Familiar</span>
-                    <span style="color: var(--success)" id="balance-status">Saudável</span>
+                    <span style="color: var(--success)" id="balance-status">Equilibrado</span>
                 </div>
                 <div class="scale-bar-wrapper" style="width: 100%; height: 12px; background: #252528">
                     <div id="scale-income" class="scale-fill income" style="background: var(--primary)"></div>
@@ -72,11 +81,8 @@
                     <span style="font-size: 1.2rem">🏠</span>
                     <h3 style="font-family: var(--font-titles)">Conta Casa</h3>
                 </div>
-                <div class="house-items">
-                    <div class="house-row"><span>Aluguel</span> <strong>R$ 1.252,93</strong></div>
-                    <div class="house-row"><span>Luz/Enel</span> <strong>R$ 320,50</strong></div>
-                    <div class="house-row"><span>Água</span> <strong>R$ 85,00</strong></div>
-                    <div class="house-row"><span>Internet</span> <strong>R$ 120,00</strong></div>
+                <div class="house-items" id="house-items-list">
+                    <div class="empty-state">Nenhum gasto fixo registrado.</div>
                 </div>
             </div>
         </main>
@@ -84,72 +90,54 @@
         <!-- Aba: Histórico (Analytics) -->
         <main class="main-dashboard view-section" id="view-analytics">
             <h2 style="font-family: var(--font-titles)">Histórico</h2>
-            <div class="card-item">
-                <div class="icon-box">🛒</div>
-                <div style="flex: 1">
-                    <p>Mercado Central</p>
-                    <small style="color: var(--text-med)">Hoje, 14:30</small>
-                </div>
-                <span class="amount expense">- R$ 150,00</span>
-            </div>
-            <div class="card-item">
-                <div class="icon-box">💡</div>
-                <div style="flex: 1">
-                    <p>Enel - Energia</p>
-                    <small style="color: var(--text-med)">Ontem, 09:00</small>
-                </div>
-                <span class="amount expense">- R$ 320,50</span>
+            <div id="transaction-history" class="transaction-list">
+                <div class="empty-state">Scaneie uma nota para começar.</div>
             </div>
         </main>
 
-        <!-- Aba: Cartões -->
+        <!-- Aba: Assinaturas & Cartões -->
         <main class="main-dashboard view-section" id="view-cards">
             <h2 style="font-family: var(--font-titles)">Assinaturas & Cartões</h2>
             <div class="card-finance" style="background: var(--accent-gradient); min-height: 180px; justify-content: space-between;">
                 <div>
                     <p style="opacity: 0.8">Cartão Principal</p>
-                    <h3>**** **** **** 4590</h3>
+                    <h3 id="card-mask">**** **** **** 0000</h3>
                 </div>
-                <h2 style="text-align: right">VISA</h2>
+                <h2 style="text-align: right">AURU</h2>
             </div>
-            <div class="card-item">
-                <div class="icon-box">🎵</div>
-                <div style="flex: 1">
-                    <p>Spotify Premium</p>
-                    <small style="color: var(--text-med)">VISA 4590 • Dia 20</small>
-                </div>
-                <span>R$ 21,90</span>
-            </div>
-            <div class="card-item">
-                <div class="icon-box">🛒</div>
-                <div style="flex: 1">
-                    <p>Mercado Central</p>
-                    <small style="color: var(--text-med)">MASTERCARD 1234 • Hoje</small>
-                </div>
-                <span>R$ 150,00</span>
+            <div id="card-transactions-list">
+                <div class="empty-state">Sem faturas registradas.</div>
             </div>
         </main>
 
-        <!-- Aba: Perfil -->
+        <!-- Aba: Configurações (Perfil) -->
         <main class="main-dashboard view-section" id="view-profile">
-            <h2 style="font-family: var(--font-titles)">Núcleo Familiar</h2>
+            <h2 style="font-family: var(--font-titles)">Configurações</h2>
             <div class="card-finance" style="align-items: center; text-align: center;">
-                <div class="avatar-circle" style="width: 80px; height: 80px;"></div>
-                <h3>Dona de Casa</h3>
-                <p style="color: var(--text-med)">Admin do Household</p>
+                <div class="avatar-edit-container">
+                    <div class="avatar-circle" id="profile-avatar-large" style="width: 80px; height: 80px;"></div>
+                    <label for="avatar-upload" class="edit-icon">✎</label>
+                    <input type="file" id="avatar-upload" hidden accept="image/*">
+                </div>
+                <h3 id="profile-name">Nome do Usuário</h3>
+                <p style="color: var(--text-med)">Auru Family Member</p>
             </div>
-            <button class="card-item" style="width: 100%; border: none; cursor: pointer; color: var(--primary)">
-                + Convidar Membro da Família
-            </button>
+            
+            <div class="settings-list">
+                <div class="card-item" onclick="logout()">
+                    <div class="icon-box">🚪</div>
+                    <p>Sair da Conta</p>
+                </div>
+            </div>
         </main>
 
-        <!-- Navegação Flutuante -->
+        <!-- Navegação Flutuante Atualizada -->
         <nav class="floating-nav">
-            <a href="#" class="nav-item active">🏠</a>
-            <a href="#" class="nav-item">📊</a>
+            <a href="#" class="nav-item active" onclick="switchView('home', 0)">🏠</a>
+            <a href="#" class="nav-item" onclick="switchView('analytics', 1)">📊</a>
             <div class="scanner-btn" id="scanner-btn">+</div>
-            <a href="#" class="nav-item">💳</a>
-            <a href="#" class="nav-item">👤</a>
+            <a href="#" class="nav-item" onclick="switchView('cards', 3)">💳</a>
+            <a href="#" class="nav-item" onclick="switchView('profile', 4)">⚙️</a>
         </nav>
     </div>
 

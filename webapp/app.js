@@ -1,8 +1,16 @@
+let appState = {
+    user: null,
+    balance: parseFloat(localStorage.getItem('auru_balance') || '0'),
+    expenses: 0,
+    transactions: []
+};
+
 function initApp() {
     const savedUser = localStorage.getItem('auru_user');
     if (savedUser) {
         showMainApp(savedUser);
     }
+    updateBalanceDisplay();
 }
 
 function selectProfile(name) {
@@ -16,81 +24,88 @@ function selectProfile(name) {
 }
 
 function showMainApp(name) {
-    const app = document.getElementById('main-app');
-    if (app) app.style.display = 'flex';
+    appState.user = name;
+    document.getElementById('main-app').style.display = 'flex';
+    document.getElementById('user-display-name').textContent = name;
+    document.getElementById('profile-name').textContent = name;
     
-    const nameEl = document.getElementById('user-display-name');
-    if (nameEl) nameEl.textContent = name;
-    
+    // Customização visual por perfil
     const avatar = document.getElementById('current-user-avatar');
-    if (avatar) {
-        if (name === 'Marcos') {
-            avatar.style.background = 'linear-gradient(45deg, #2196F3, #00BCD4)';
-        } else {
-            avatar.style.background = 'linear-gradient(45deg, #E91E63, #9C27B0)';
+    const avatarLarge = document.getElementById('profile-avatar-large');
+    const gradient = name === 'Marcos' 
+        ? 'linear-gradient(45deg, #2196F3, #00BCD4)' 
+        : 'linear-gradient(45deg, #E91E63, #9C27B0)';
+    
+    avatar.style.background = gradient;
+    if(avatarLarge) avatarLarge.style.background = gradient;
+}
+
+function updateBalanceDisplay() {
+    const balanceEl = document.getElementById('current-balance');
+    const spentEl = document.getElementById('total-spending');
+    const remainingEl = document.getElementById('remaining-value');
+    
+    const remaining = appState.balance - appState.expenses;
+    
+    if(balanceEl) balanceEl.textContent = `R$ ${appState.balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+    if(spentEl) spentEl.textContent = `R$ ${appState.expenses.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+    
+    if(remainingEl) {
+        remainingEl.textContent = `R$ ${remaining.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+        remainingEl.style.color = remaining > 0 ? 'var(--success)' : (remaining < 0 ? 'var(--danger)' : 'white');
+    }
+}
+
+function addFunds() {
+    const value = prompt("Quanto deseja adicionar ao saldo?", "50,00");
+    if(value) {
+        const amount = parseFloat(value.replace(',', '.'));
+        if(!isNaN(amount)) {
+            appState.balance += amount;
+            localStorage.setItem('auru_balance', appState.balance);
+            updateBalanceDisplay();
         }
     }
+}
+
+function switchView(viewKey, index) {
+    const navItems = document.querySelectorAll('.nav-item');
+    const views = document.querySelectorAll('.view-section');
+    
+    navItems.forEach(nav => nav.classList.remove('active'));
+    // Achar o item correto baseado no index passado
+    navItems[index].classList.add('active');
+
+    const targetId = `view-${viewKey}`;
+    views.forEach(view => {
+        view.classList.remove('active');
+        if(view.id === targetId) view.classList.add('active');
+    });
+
+    if(viewKey === 'home') initDashboard();
 }
 
 function initDashboard() {
-    // Animação das barras do gráfico
-    const bars = document.querySelectorAll('.chart-bar');
-    bars.forEach((bar, index) => {
-        const targetHeight = bar.style.height || '70%';
-        bar.style.height = '0%';
-        setTimeout(() => {
-            bar.style.height = targetHeight;
-        }, 200 + (index * 100));
-    });
-
-    updateScale(75, 25); // 75% gastos / 25% disponível
-}
-
-function updateScale(expensePercent, incomePercent) {
-    const expenseFill = document.getElementById('scale-expense');
-    if (expenseFill) {
-        expenseFill.style.width = `${expensePercent}%`;
-        expenseFill.style.left = '0%';
+    // Animação das barras (seriam dados reais no futuro)
+    const container = document.getElementById('spending-chart');
+    if(container && container.children.length === 0) {
+        for(let i=0; i<5; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'chart-bar';
+            bar.style.height = '0%';
+            container.appendChild(bar);
+            setTimeout(() => bar.style.height = `${Math.random()*70 + 10}%`, 200 + i*100);
+        }
     }
 }
 
-// Navegação entre Abas
-const navItems = document.querySelectorAll('.nav-item');
-const views = document.querySelectorAll('.view-section');
+function logout() {
+    localStorage.clear();
+    location.reload();
+}
 
-navItems.forEach((item, index) => {
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        navItems.forEach(nav => nav.classList.remove('active'));
-        item.classList.add('active');
-
-        const viewMap = ['home', 'analytics', 'cards', 'profile'];
-        // O scanner btn é o terceiro item (index 2), então compensamos
-        let viewKey = index;
-        if (index === 2) return; // Ignorar clique no scanner para navegação de abas
-        if (index > 2) viewKey = index - 1;
-        
-        const targetViewId = `view-${viewMap[viewKey]}`;
-        
-        views.forEach(view => {
-            view.classList.remove('active');
-            if(view.id === targetViewId) {
-                view.classList.add('active');
-            }
-        });
-
-        if (targetViewId === 'view-home') {
-            initDashboard();
-        }
-    });
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-    initDashboard();
-});
+document.addEventListener('DOMContentLoaded', initApp);
 
 document.getElementById('scanner-btn').addEventListener('click', () => {
-    alert('Auru iniciou o escaneamento do recibo...');
+    alert('Auru iniciou o escaneamento do recibo... (Modo Teste)');
 });
