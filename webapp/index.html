@@ -11,14 +11,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="app-container">
+    <!-- Tela de Seleção de Perfil (Splash) -->
+    <div id="splash-screen" class="splash-overlay">
+        <div class="splash-content">
+            <h1 class="vision-title">AURU</h1>
+            <p>Escolha seu Perfil Familiar</p>
+            <div class="profile-cards">
+                <div class="profile-card" onclick="selectProfile('Marcos')">
+                    <div class="profile-avatar marcos"></div>
+                    <span>Marcos</span>
+                </div>
+                <div class="profile-card" onclick="selectProfile('Maria Izabel')">
+                    <div class="profile-avatar izabel"></div>
+                    <span>Maria Izabel</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container" id="main-app" style="display: none;">
         <!-- Cabeçalho de Perfil -->
         <header class="header-vision">
             <div class="user-badge">
-                <div class="avatar-circle"></div>
-                <p style="color: var(--text-med)">Bem-vinda,</p>
-                <h2 id="user-name">Esposa</h2>
+                <div class="avatar-circle" id="current-user-avatar"></div>
+                <p style="color: var(--text-med)">Bem-vindo,</p>
+                <h2 id="user-display-name">Carregando...</h2>
             </div>
         </header>
 

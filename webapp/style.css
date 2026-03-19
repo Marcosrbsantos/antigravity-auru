@@ -1,6 +1,5 @@
 /* 
   Antigravity Design System - Premium SaaS Layout
-  Ref: "Family Finance" Aesthetic
 */
 
 :root {
@@ -205,4 +204,68 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+/* Splash Screen */
+.splash-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+    transition: opacity 0.5s ease;
+}
+
+.splash-content {
+    text-align: center;
+    width: 90%;
+}
+
+.vision-title {
+    font-family: var(--font-titles);
+    font-size: 3rem;
+    letter-spacing: 12px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 40px;
+}
+
+.profile-cards {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.profile-card {
+    background: var(--bg-surface);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: transform 0.3s ease, border 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.profile-card:hover {
+    transform: translateY(-10px);
+    border: 1px solid var(--primary);
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    background: #252528;
+    background-size: cover;
+}
+
+.profile-avatar.marcos { background-image: linear-gradient(45deg, #2196F3, #00BCD4); }
+.profile-avatar.izabel { background-image: linear-gradient(45deg, #E91E63, #9C27B0); }
+
+.profile-card span {
+    font-family: var(--font-titles);
+    font-size: 1.1rem;
+    color: var(--text-high);
 }
