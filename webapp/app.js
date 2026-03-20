@@ -28,6 +28,9 @@ function selectProfile(name) {
 
 function showMainApp(name) {
     appState.user = name;
+    const splash = document.getElementById('splash-screen');
+    if(splash) splash.style.display = 'none';
+    
     document.getElementById('main-app').style.display = 'flex';
     document.getElementById('user-display-name').textContent = name;
     document.getElementById('profile-name').innerHTML = `${name} <span onclick="editName()" style="cursor:pointer; font-size:0.8rem; opacity:0.6;">✎</span>`;
