@@ -16,16 +16,19 @@ class handler(BaseHTTPRequestHandler):
         image_base64 = data.get("image")
         
         prompt = """
-        Você é a AURU, uma IA especialista em finanças brasileiras. 
-        Analise o cupom fiscal ou boleto e retorne APENAS um JSON:
+        Você é a AURU, especialista em OCR de cupons fiscais brasileiros.
+        Analise a imagem e retorne um JSON com esta estrutura:
         {
-          "type": "compra" ou "boleto",
-          "merchant": "Nome do Local",
-          "amount": 0.00,
-          "category": "Mercado", "Saúde", "Casa", etc,
-          "card_info": "VISA 4590",
-          "date": "YYYY-MM-DD"
+          "type": "compra",
+          "merchant": "Nome do Mercado",
+          "total": 0.00,
+          "date": "YYYY-MM-DD",
+          "items": [
+            {"name": "Arroz 5kg", "price": 25.90, "icon": "🌾"},
+            {"name": "Leite Integral", "price": 5.49, "icon": "🥛"}
+          ]
         }
+        Use emojis brasileiros apropriados no campo 'icon'.
         """
 
         try:

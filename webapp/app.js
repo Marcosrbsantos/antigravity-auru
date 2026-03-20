@@ -130,20 +130,7 @@ document.getElementById('real-scanner-input').addEventListener('change', async (
             if (!response.ok) throw new Error('Erro na análise da IA');
 
             const data = await response.json();
-            console.log('Auru Result:', data);
-            
-            // Adicionar à lista de transações (exemplo simplificado)
-            appState.expenses += data.amount;
-            appState.transactions.unshift({
-                merchant: data.merchant,
-                amount: data.amount,
-                date: new Date().toLocaleTimeString(),
-                category: data.category
-            });
-
-            updateBalanceDisplay();
-            renderTransactions();
-            alert(`✅ Auru identificou: ${data.merchant} - R$ ${data.amount}`);
+            showReviewModal(data);
 
         } catch (error) {
             console.error(error);
@@ -152,6 +139,65 @@ document.getElementById('real-scanner-input').addEventListener('change', async (
     };
     reader.readAsDataURL(file);
 });
+
+let currentReviewData = null;
+
+function showReviewModal(data) {
+    currentReviewData = data;
+    document.getElementById('review-merchant').textContent = data.merchant;
+    document.getElementById('review-modal').style.display = 'flex';
+    
+    renderReviewItems();
+}
+
+function renderReviewItems() {
+    const list = document.getElementById('review-items-list');
+    list.innerHTML = currentReviewData.items.map((item, index) => `
+        <div class="review-item">
+            <span style="font-size: 1.2rem">${item.icon || '📦'}</span>
+            <input type="text" value="${item.name}" onchange="updateItemName(${index}, this.value)">
+            <input type="text" class="price-input" value="${item.price.toFixed(2)}" onchange="updateItemPrice(${index}, this.value)">
+        </div>
+    `).join('');
+    
+    updateReviewTotal();
+}
+
+function updateItemName(index, val) { 
+    currentReviewData.items[index].name = val; 
+}
+
+function updateItemPrice(index, val) { 
+    currentReviewData.items[index].price = parseFloat(val.replace(',', '.'));
+    updateReviewTotal();
+}
+
+function updateReviewTotal() {
+    const total = currentReviewData.items.reduce((acc, i) => acc + i.price, 0);
+    currentReviewData.total = total;
+    document.getElementById('review-total-value').textContent = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+}
+
+function confirmPurchase() {
+    // Adicionar à lista global
+    appState.expenses += currentReviewData.total;
+    appState.transactions.unshift({
+        merchant: currentReviewData.merchant,
+        amount: currentReviewData.total,
+        date: new Date().toLocaleTimeString(),
+        type: 'compra'
+    });
+
+    updateBalanceDisplay();
+    renderTransactions();
+    closeReview();
+    alert('✅ Compra salva com sucesso!');
+}
+
+function closeReview() {
+    document.getElementById('review-modal').style.display = 'none';
+    currentReviewData = null;
+}
 
 function renderTransactions() {
     const list = document.getElementById('transaction-history');
