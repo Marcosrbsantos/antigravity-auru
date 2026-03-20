@@ -107,5 +107,69 @@ function logout() {
 document.addEventListener('DOMContentLoaded', initApp);
 
 document.getElementById('scanner-btn').addEventListener('click', () => {
-    alert('Auru iniciou o escaneamento do recibo... (Modo Teste)');
+    document.getElementById('real-scanner-input').click();
 });
+
+document.getElementById('real-scanner-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    alert('🔎 Auru está analisando sua nota... Aguarde um instante.');
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+        const base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
+        
+        try {
+            const response = await fetch('/api/process_receipt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64String })
+            });
+
+            if (!response.ok) throw new Error('Erro na análise da IA');
+
+            const data = await response.json();
+            console.log('Auru Result:', data);
+            
+            // Adicionar à lista de transações (exemplo simplificado)
+            appState.expenses += data.amount;
+            appState.transactions.unshift({
+                merchant: data.merchant,
+                amount: data.amount,
+                date: new Date().toLocaleTimeString(),
+                category: data.category
+            });
+
+            updateBalanceDisplay();
+            renderTransactions();
+            alert(`✅ Auru identificou: ${data.merchant} - R$ ${data.amount}`);
+
+        } catch (error) {
+            console.error(error);
+            alert('❌ Erro: Não consegui ler esta nota. Tente novamente.');
+        }
+    };
+    reader.readAsDataURL(file);
+});
+
+function renderTransactions() {
+    const list = document.getElementById('transaction-history');
+    if (!list) return;
+    
+    if (appState.transactions.length === 0) {
+        list.innerHTML = '<div class="empty-state">Scaneie uma nota para começar.</div>';
+        return;
+    }
+
+    list.innerHTML = appState.transactions.map(t => `
+        <div class="card-item">
+            <div class="icon-box">${t.type === 'compra' ? '🛒' : '📄'}</div>
+            <div style="flex: 1">
+                <p>${t.merchant}</p>
+                <small style="color: var(--text-med)">${t.date}</small>
+            </div>
+            <span class="amount expense">- R$ ${t.amount.toLocaleString('pt-BR')}</span>
+        </div>
+    `).join('');
+}
