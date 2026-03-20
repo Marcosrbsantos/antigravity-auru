@@ -203,28 +203,46 @@ document.getElementById('real-scanner-input').addEventListener('change', async (
     const file = e.target.files[0];
     if (!file) return;
 
-    alert('🔎 Auru está analisando sua nota... Aguarde um instante.');
+    alert('🔎 Auru recebeu a imagem! Comprimindo e analisando...');
 
     const reader = new FileReader();
-    reader.onloadend = async () => {
-        const base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
-        
-        try {
-            const response = await fetch('/api/process_receipt', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64String })
-            });
+    reader.onload = async (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = async () => {
+            // Comprimir imagem para max 1024px
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1024;
+            const scale = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH;
+            canvas.height = img.height * scale;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7)
+                                          .replace('data:', '').replace(/^.+,/, '');
 
-            if (!response.ok) throw new Error('Erro na análise da IA');
+            try {
+                const response = await fetch('/api/process_receipt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: compressedBase64 })
+                });
 
-            const data = await response.json();
-            showReviewModal(data);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Erro no Servidor');
+                }
 
-        } catch (error) {
-            console.error(error);
-            alert('❌ Erro: Não consegui ler esta nota. Tente novamente.');
-        }
+                const data = await response.json();
+                showReviewModal(data);
+
+            } catch (error) {
+                console.error(error);
+                alert(`❌ Erro da Auru: ${error.message}\n\nVerifique se a GROQ_API_KEY está configurada na Vercel.`);
+            }
+        };
     };
     reader.readAsDataURL(file);
 });
