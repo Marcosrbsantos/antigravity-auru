@@ -1,39 +1,48 @@
 import os
 import json
-import base64
-from http.server import BaseHTTPRequestHandler
 from groq import Groq
 
 # Configuração da Groq
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-class handler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        data = json.loads(post_data)
+def handler(request):
+    # CORS Headers
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Content-Type': 'application/json'
+    }
 
-        image_base64 = data.get("image")
-        
-        prompt = """
-        Você é a AURU, especialista em OCR de cupons fiscais brasileiros.
-        Analise a imagem e retorne um JSON com esta estrutura:
-        {
-          "type": "compra",
-          "merchant": "Nome do Mercado",
-          "total": 0.00,
-          "date": "YYYY-MM-DD",
-          "items": [
-            {"name": "Arroz 5kg", "price": 25.90, "icon": "🌾"},
-            {"name": "Leite Integral", "price": 5.49, "icon": "🥛"}
-          ]
-        }
-        Use emojis brasileiros apropriados no campo 'icon'.
-        """
+    if request.method == 'OPTIONS':
+        return { 'statusCode': 200, 'headers': headers, 'body': '' }
 
+    if request.method == 'POST':
         try:
+            # Vercel request object has .json() or we read .body
+            data = request.json
+            image_base64 = data.get("image")
+            
+            if not image_base64:
+                return { 'statusCode': 400, 'headers': headers, 'body': json.dumps({"error": "No image provided"}) }
+
+            prompt = """
+            Você é a AURU, especialista em OCR de cupons fiscais brasileiros.
+            Analise a imagem e retorne um JSON com esta estrutura:
+            {
+              "type": "compra",
+              "merchant": "Nome do Mercado",
+              "total": 0.00,
+              "date": "2024-03-20",
+              "items": [
+                {"name": "Produto", "price": 0.00, "icon": "📦"}
+              ]
+            }
+            Use emojis apropriados. Se for boleto, mude type para 'boleto'.
+            """
+
             completion = client.chat.completions.create(
-                model="llama-3.2-90b-vision-preview",
+                model="llama-3.2-11b-vision-preview", # Usei a 11B pq é mais rápida pra Vercel não dar timeout
                 messages=[
                     {
                         "role": "user",
@@ -51,20 +60,17 @@ class handler(BaseHTTPRequestHandler):
             
             result = completion.choices[0].message.content
             
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(result.encode('utf-8'))
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': result
+            }
             
         except Exception as e:
-            self.send_response(500)
-            self.end_headers()
-            self.wfile.write(str(e).encode('utf-8'))
+            return {
+                'statusCode': 500,
+                'headers': headers,
+                'body': json.dumps({"error": str(e)})
+            }
 
-    def do_OPTIONS(self):
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
+    return { 'statusCode': 405, 'headers': headers, 'body': 'Method Not Allowed' }
