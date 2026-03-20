@@ -2,32 +2,35 @@ let appState = {
     user: null,
     balance: parseFloat(localStorage.getItem('auru_balance') || '0'),
     expenses: 0,
-    transactions: []
+    transactions: [],
+    subscriptions: JSON.parse(localStorage.getItem('auru_subs') || '[]')
 };
 
 function initApp() {
     const savedUser = localStorage.getItem('auru_user');
+    const savedPhoto = localStorage.getItem(`auru_photo_${savedUser}`);
+    
     if (savedUser) {
         showMainApp(savedUser);
+        if(savedPhoto) {
+            updateUserPhoto(savedPhoto);
+        }
     }
     updateBalanceDisplay();
+    renderSubscriptions();
 }
 
 function selectProfile(name) {
     localStorage.setItem('auru_user', name);
-    const splash = document.getElementById('splash-screen');
-    splash.style.opacity = '0';
-    setTimeout(() => {
-        splash.style.display = 'none';
-        showMainApp(name);
-    }, 500);
+    // Resetar estado para o novo usuário se necessário
+    location.reload(); 
 }
 
 function showMainApp(name) {
     appState.user = name;
     document.getElementById('main-app').style.display = 'flex';
     document.getElementById('user-display-name').textContent = name;
-    document.getElementById('profile-name').textContent = name;
+    document.getElementById('profile-name').innerHTML = `${name} <span onclick="editName()" style="cursor:pointer; font-size:0.8rem; opacity:0.6;">✎</span>`;
     
     // Customização visual por perfil
     const avatar = document.getElementById('current-user-avatar');
@@ -38,6 +41,73 @@ function showMainApp(name) {
     
     avatar.style.background = gradient;
     if(avatarLarge) avatarLarge.style.background = gradient;
+}
+
+function editName() {
+    const newName = prompt("Como deseja ser chamado?", appState.user);
+    if(newName) {
+        localStorage.setItem('auru_user', newName);
+        location.reload();
+    }
+}
+
+document.getElementById('avatar-upload')?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const photoData = event.target.result;
+            localStorage.setItem(`auru_photo_${appState.user}`, photoData);
+            updateUserPhoto(photoData);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+function updateUserPhoto(data) {
+    const avatar = document.getElementById('current-user-avatar');
+    const avatarLarge = document.getElementById('profile-avatar-large');
+    
+    if(avatar) {
+        avatar.style.backgroundImage = `url(${data})`;
+        avatar.style.backgroundSize = 'cover';
+    }
+    if(avatarLarge) {
+        avatarLarge.style.backgroundImage = `url(${data})`;
+        avatarLarge.style.backgroundSize = 'cover';
+    }
+}
+
+function openAddSubscription() {
+    const name = prompt("Nome da Assinatura (ex: Netflix):");
+    const val = prompt("Valor Mensal:", "39,90");
+    if(name && val) {
+        const amount = parseFloat(val.replace(',', '.'));
+        appState.subscriptions.push({ name, amount, icon: '💳' });
+        localStorage.setItem('auru_subs', JSON.stringify(appState.subscriptions));
+        renderSubscriptions();
+    }
+}
+
+function renderSubscriptions() {
+    const list = document.getElementById('card-transactions-list');
+    if(!list) return;
+    
+    if(appState.subscriptions.length === 0) {
+        list.innerHTML = '<div class="empty-state">Sem assinaturas registradas.</div>';
+        return;
+    }
+
+    list.innerHTML = appState.subscriptions.map(s => `
+        <div class="card-item">
+            <div class="icon-box">${s.icon}</div>
+            <div style="flex: 1">
+                <p>${s.name}</p>
+                <small style="color: var(--text-med)">Assinatura Mensal</small>
+            </div>
+            <span>R$ ${s.amount.toFixed(2)}</span>
+        </div>
+    `).join('');
 }
 
 function updateBalanceDisplay() {
