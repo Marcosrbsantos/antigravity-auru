@@ -101,16 +101,28 @@ function renderSubscriptions() {
         return;
     }
 
-    list.innerHTML = appState.subscriptions.map(s => `
+    list.innerHTML = appState.subscriptions.map((s, index) => `
         <div class="card-item">
             <div class="icon-box">${s.icon}</div>
             <div style="flex: 1">
                 <p>${s.name}</p>
                 <small style="color: var(--text-med)">Assinatura Mensal</small>
             </div>
-            <span>R$ ${s.amount.toFixed(2)}</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span>R$ ${s.amount.toFixed(2)}</span>
+                <span onclick="deleteSubscription(${index})" style="cursor:pointer; opacity:0.5;">🗑️</span>
+            </div>
         </div>
     `).join('');
+}
+
+function deleteSubscription(index) {
+    if(confirm("Deseja excluir esta assinatura?")) {
+        appState.subscriptions.splice(index, 1);
+        localStorage.setItem('auru_subs', JSON.stringify(appState.subscriptions));
+        renderSubscriptions();
+        updateBalanceDisplay();
+    }
 }
 
 function updateBalanceDisplay() {
@@ -118,10 +130,14 @@ function updateBalanceDisplay() {
     const spentEl = document.getElementById('total-spending');
     const remainingEl = document.getElementById('remaining-value');
     
-    const remaining = appState.balance - appState.expenses;
+    // Somar gastos de transações + assinaturas
+    const subsTotal = appState.subscriptions.reduce((acc, s) => acc + s.amount, 0);
+    const totalSpent = appState.expenses + subsTotal;
+    
+    const remaining = appState.balance - totalSpent;
     
     if(balanceEl) balanceEl.textContent = `R$ ${appState.balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    if(spentEl) spentEl.textContent = `R$ ${appState.expenses.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+    if(spentEl) spentEl.textContent = `R$ ${totalSpent.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
     
     if(remainingEl) {
         remainingEl.textContent = `R$ ${remaining.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
@@ -281,14 +297,26 @@ function renderTransactions() {
         return;
     }
 
-    list.innerHTML = appState.transactions.map(t => `
+    list.innerHTML = appState.transactions.map((t, index) => `
         <div class="card-item">
             <div class="icon-box">${t.type === 'compra' ? '🛒' : '📄'}</div>
             <div style="flex: 1">
                 <p>${t.merchant}</p>
                 <small style="color: var(--text-med)">${t.date}</small>
             </div>
-            <span class="amount expense">- R$ ${t.amount.toLocaleString('pt-BR')}</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="amount expense">- R$ ${t.amount.toLocaleString('pt-BR')}</span>
+                <span onclick="deleteTransaction(${index})" style="cursor:pointer; opacity:0.5;">🗑️</span>
+            </div>
         </div>
     `).join('');
+}
+
+function deleteTransaction(index) {
+    if(confirm("Deseja apagar este gasto?")) {
+        const removed = appState.transactions.splice(index, 1)[0];
+        appState.expenses -= removed.amount;
+        renderTransactions();
+        updateBalanceDisplay();
+    }
 }
